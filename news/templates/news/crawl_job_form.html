@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Crawl Job - News Aggregator{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="bi bi-search"></i> Create New Crawl Job</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    Create a new crawl job to search for news articles based on keywords and country.
+                    The system will automatically scrape news articles and present them for review.
+                </p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-play-circle"></i> Start Crawling
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="alert alert-info mt-3">
+            <h5><i class="bi bi-info-circle"></i> How it works:</h5>
+            <ol class="mb-0">
+                <li>Enter keywords related to the news you want to find</li>
+                <li>Specify the country to filter results</li>
+                <li>Click "Start Crawling" to begin the search</li>
+                <li>The system will search and scrape articles automatically</li>
+                <li>Review and approve articles before they are published</li>
+            </ol>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block title %}Crawl Job #{{ job.id }} - News Aggregator{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="bi bi-file-earmark-text"></i> Crawl Job #{{ job.id }}</h1>
+    </div>
+    <div class="col-auto">
+        <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+</div>
+
+<!-- Job Details Card -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h4 class="mb-0">Job Details</h4>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>Keywords:</strong> {{ job.keywords }}</p>
+                <p><strong>Country:</strong> {{ job.country }}</p>
+                <p><strong>Status:</strong>
+                    {% if job.status == 'completed' %}
+                    <span class="badge bg-success">{{ job.status|title }}</span>
+                    {% elif job.status == 'running' %}
+                    <span class="badge bg-primary">{{ job.status|title }}</span>
+                    {% elif job.status == 'failed' %}
+                    <span class="badge bg-danger">{{ job.status|title }}</span>
+                    {% else %}
+                    <span class="badge bg-secondary">{{ job.status|title }}</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Articles Found:</strong> {{ job.articles_found }}</p>
+                <p><strong>Created:</strong> {{ job.created_at|date:"M d, Y H:i" }}</p>
+                {% if job.completed_at %}
+                <p><strong>Completed:</strong> {{ job.completed_at|date:"M d, Y H:i" }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if job.error_message %}
+        <div class="alert alert-danger mt-3">
+            <strong>Error:</strong> {{ job.error_message }}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Articles Found -->
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0">Articles Found ({{ articles.count }})</h4>
+    </div>
+    <div class="card-body">
+        {% if articles %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Source</th>
+                        <th>Status</th>
+                        <th>Scraped</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for article in articles %}
+                    <tr>
+                        <td>{{ article.title|truncatewords:10 }}</td>
+                        <td>{{ article.source_name }}</td>
+                        <td>
+                            {% if article.status == 'published' %}
+                            <span class="badge bg-success">{{ article.status|title }}</span>
+                            {% elif article.status == 'approved' %}
+                            <span class="badge bg-info">{{ article.status|title }}</span>
+                            {% elif article.status == 'rejected' %}
+                            <span class="badge bg-danger">{{ article.status|title }}</span>
+                            {% else %}
+                            <span class="badge bg-warning">{{ article.status|title }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ article.scraped_at|date:"M d, H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <p class="text-muted">No articles found yet.</p>
+            {% if job.status == 'running' %}
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Crawling in progress...</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

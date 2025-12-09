@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - News Aggregator{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="bi bi-speedometer2"></i> Dashboard</h1>
+    </div>
+    <div class="col-auto">
+        <a href="{% url 'create_crawl_job' %}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Crawl Job
+        </a>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Crawl Jobs</h5>
+                <h2>{{ total_jobs }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">Pending Review</h5>
+                <h2>{{ pending_articles }}</h2>
+                <a href="{% url 'pending_articles' %}" class="btn btn-sm btn-light mt-2">Review Now</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Published Articles</h5>
+                <h2>{{ published_articles }}</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Crawl Jobs List -->
+<div class="card">
+    <div class="card-header">
+        <h4 class="mb-0">Recent Crawl Jobs</h4>
+    </div>
+    <div class="card-body">
+        {% if crawl_jobs %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Keywords</th>
+                        <th>Country</th>
+                        <th>Status</th>
+                        <th>Articles Found</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in crawl_jobs %}
+                    <tr>
+                        <td>{{ job.id }}</td>
+                        <td>{{ job.keywords|truncatewords:5 }}</td>
+                        <td>{{ job.country }}</td>
+                        <td>
+                            {% if job.status == 'completed' %}
+                            <span class="badge bg-success">{{ job.status|title }}</span>
+                            {% elif job.status == 'running' %}
+                            <span class="badge bg-primary">{{ job.status|title }}</span>
+                            {% elif job.status == 'failed' %}
+                            <span class="badge bg-danger">{{ job.status|title }}</span>
+                            {% else %}
+                            <span class="badge bg-secondary">{{ job.status|title }}</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ job.articles_found }}</td>
+                        <td>{{ job.created_at|date:"M d, Y H:i" }}</td>
+                        <td>
+                            <a href="{% url 'crawl_job_detail' job.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav>
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1">First</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                </li>
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-inbox" style="font-size: 3rem; color: #ccc;"></i>
+            <p class="text-muted mt-3">No crawl jobs yet. Create your first one!</p>
+            <a href="{% url 'create_crawl_job' %}" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Create Crawl Job
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

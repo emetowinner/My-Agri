@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Add Manual Article - News Aggregator{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="mb-0"><i class="bi bi-pencil-square"></i> Add Manual Article</h3>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    Manually add a news article to the system. The article will be pending review before publication.
+                </p>
+
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <a href="{% url 'pending_articles' %}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Save Article
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="alert alert-info mt-3">
+            <h5><i class="bi bi-lightbulb"></i> Tips:</h5>
+            <ul class="mb-0">
+                <li>Make sure the URL is valid and accessible</li>
+                <li>Write a clear 3-paragraph summary of the article</li>
+                <li>Add relevant keywords that match the article content</li>
+                <li>The article will need approval before being published</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
